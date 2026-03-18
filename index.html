@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TICKER — Stock Market for Beginners</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=IBM+Plex+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0c10;
+  --bg2: #111318;
+  --bg3: #181c24;
+  --gold: #d4a843;
+  --gold2: #f0c96a;
+  --green: #2ecc71;
+  --red: #e74c3c;
+  --text: #e8e4d8;
+  --muted: #7a7870;
+  --border: #2a2d35;
+  --card: #13161e;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
+}
+
+/* ── TICKER TAPE ── */
+.ticker-tape {
+  background: var(--gold);
+  color: #000;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.ticker-inner {
+  display: inline-block;
+  animation: scroll-ticker 30s linear infinite;
+}
+.ticker-inner span { margin: 0 32px; }
+.ticker-inner .up::before { content: "▲ "; color: #1a6e3f; }
+.ticker-inner .dn::before { content: "▼ "; color: #8b1a1a; }
+@keyframes scroll-ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 48px;
+  background: rgba(10,12,16,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: -1px;
+}
+.nav-logo span { color: var(--text); }
+.nav-links { display: flex; gap: 32px; list-style: none; }
+.nav-links a {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--muted);
+  text-decoration: none;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: color .2s;
+}
+.nav-links a:hover { color: var(--gold); }
+.nav-cta {
+  background: var(--gold);
+  color: #000;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background .2s, transform .1s;
+}
+.nav-cta:hover { background: var(--gold2); transform: translateY(-1px); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 92vh;
+  display: flex; align-items: center;
+  padding: 80px 48px;
+  position: relative;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 60% 70% at 80% 50%, rgba(212,168,67,0.08) 0%, transparent 70%),
+              radial-gradient(ellipse 40% 40% at 20% 80%, rgba(46,204,113,0.04) 0%, transparent 60%);
+}
+.hero-grid {
+  position: absolute; inset: 0; opacity: .04;
+  background-image: linear-gradient(var(--border) 1px, transparent 1px),
+                    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+.hero-content { position: relative; max-width: 720px; }
+.hero-eyebrow {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--gold);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  opacity: 0; animation: fadeUp .6s .2s ease forwards;
+}
+.hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(52px, 7vw, 88px);
+  font-weight: 900;
+  line-height: 1.0;
+  margin-bottom: 28px;
+  opacity: 0; animation: fadeUp .6s .35s ease forwards;
+}
+.hero h1 em { font-style: italic; color: var(--gold); }
+.hero-sub {
+  font-size: 18px;
+  color: var(--muted);
+  line-height: 1.7;
+  max-width: 520px;
+  margin-bottom: 44px;
+  font-weight: 300;
+  opacity: 0; animation: fadeUp .6s .5s ease forwards;
+}
+.hero-btns {
+  display: flex; gap: 16px; flex-wrap: wrap;
+  opacity: 0; animation: fadeUp .6s .65s ease forwards;
+}
+.btn-primary {
+  background: var(--gold); color: #000;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px; font-weight: 500;
+  letter-spacing: 1px; text-transform: uppercase;
+  padding: 16px 36px; border: none;
+  cursor: pointer; text-decoration: none;
+  display: inline-block;
+  transition: transform .15s, background .2s;
+}
+.btn-primary:hover { background: var(--gold2); transform: translateY(-2px); }
+.btn-secondary {
+  background: transparent; color: var(--text);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px; letter-spacing: 1px; text-transform: uppercase;
+  padding: 15px 36px;
+  border: 1px solid var(--border); cursor: pointer; text-decoration: none;
+  display: inline-block; transition: border-color .2s, color .2s;
+}
+.btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+
+/* stats row */
+.hero-stats {
+  position: absolute; bottom: 48px; right: 48px;
+  display: flex; gap: 48px;
+  opacity: 0; animation: fadeUp .6s .8s ease forwards;
+}
+.hero-stat .num {
+  font-family: 'Playfair Display', serif;
+  font-size: 36px; font-weight: 700;
+  color: var(--gold);
+}
+.hero-stat .lbl {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px; color: var(--muted);
+  letter-spacing: 1px; text-transform: uppercase;
+  margin-top: 4px;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── SECTION SHARED ── */
+section { padding: 100px 48px; }
+.section-eyebrow {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px; color: var(--gold);
+  letter-spacing: 3px; text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 700; line-height: 1.1;
+  margin-bottom: 16px;
+}
+.section-sub {
+  font-size: 17px; color: var(--muted);
+  font-weight: 300; line-height: 1.7;
+  max-width: 560px; margin-bottom: 60px;
+}
+.divider { height: 1px; background: var(--border); margin: 0 48px; }
+
+/* ── CONCEPTS GRID ── */
+#concepts { background: var(--bg2); }
+.concepts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2px;
+}
+.concept-card {
+  background: var(--card);
+  padding: 40px 36px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: border-color .25s, transform .2s, background .2s;
+  position: relative; overflow: hidden;
+}
+.concept-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--gold); transform: scaleX(0);
+  transform-origin: left; transition: transform .3s;
+}
+.concept-card:hover { border-color: var(--border); background: #1a1e28; }
+.concept-card:hover::before { transform: scaleX(1); }
+.concept-icon {
+  font-size: 36px; margin-bottom: 20px;
+  display: block;
+}
+.concept-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px; color: var(--muted);
+  letter-spacing: 2px; margin-bottom: 12px;
+}
+.concept-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px; font-weight: 700;
+  margin-bottom: 12px;
+}
+.concept-card p { font-size: 15px; color: var(--muted); line-height: 1.7; }
+
+/* ── LESSONS TABS ── */
+#lessons { background: var(--bg); }
+.tabs-nav {
+  display: flex; gap: 4px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 48px; flex-wrap: wrap;
+}
+.tab-btn {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--muted); background: none; border: none;
+  padding: 14px 24px; cursor: pointer;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  transition: color .2s, border-color .2s;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+.tab-content { display: none; }
+.tab-content.active { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+
+.lesson-text h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 34px; font-weight: 700;
+  line-height: 1.2; margin-bottom: 20px;
+}
+.lesson-text p { font-size: 16px; color: var(--muted); line-height: 1.8; margin-bottom: 16px; }
+.lesson-text ul { list-style: none; margin-top: 8px; }
+.lesson-text ul li {
+  font-size: 15px; color: var(--muted);
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+  display: flex; align-items: flex-start; gap: 12px; line-height: 1.6;
+}
+.lesson-text ul li::before { content: "→"; color: var(--gold); flex-shrink: 0; margin-top: 1px; }
+
+.lesson-visual {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  padding: 36px; border-radius: 2px;
+}
+.lesson-visual h4 {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px; color: var(--gold);
+  letter-spacing: 2px; text-transform: uppercase; margin-bottom: 24px;
+}
+
+/* ── CHART VISUAL ── */
+.chart-wrap { position: relative; height: 160px; }
+.chart-bars {
+  display: flex; align-items: flex-end; gap: 8px; height: 100%;
+}
+.bar {
+  flex: 1; background: var(--gold); opacity: .7;
+  transition: opacity .2s; border-radius: 2px 2px 0 0;
+  cursor: pointer;
+  animation: growBar .8s ease forwards;
+  transform-origin: bottom;
+  position: relative;
+}
+.bar:hover { opacity: 1; }
+.bar.red { background: var(--red); }
+@keyframes growBar {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+.chart-labels {
+  display: flex; gap: 8px; margin-top: 8px;
+}
+.chart-labels span {
+  flex: 1; text-align: center;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px; color: var(--muted);
+}
+
+/* Market Hours Clock */
+.market-clock { text-align: center; padding: 20px 0; }
+.clock-display {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 42px; font-weight: 500;
+  color: var(--gold); letter-spacing: 4px;
+  margin: 12px 0;
+}
+.market-status {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px; letter-spacing: 2px;
+  text-transform: uppercase; padding: 6px 16px;
+  display: inline-block; margin-top: 8px;
+}
+.market-status.open { background: rgba(46,204,113,.15); color: var(--green); border: 1px solid rgba(46,204,113,.3); }
+.market-status.closed { background: rgba(231,76,60,.1); color: var(--red); border: 1px solid rgba(231,76,60,.25); }
+
+/* Portfolio simulator */
+.portfolio-sim { }
+.portfolio-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 0; border-bottom: 1px solid var(--border);
+}
+.portfolio-ticker { font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 500; }
+.portfolio-name { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.portfolio-val { font-family: 'IBM Plex Mono', monospace; font-size: 14px; }
+.portfolio-chg { font-family: 'IBM Plex Mono', monospace; font-size: 13px; }
+.pos { color: var(--green); }
+.neg { color: var(--red); }
+.portfolio-total {
+  display: flex; justify-content: space-between;
+  padding: 16px 0; margin-top: 4px;
+}
+.portfolio-total .lbl { font-size: 13px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: 1px; }
+.portfolio-total .val { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; color: var(--gold); }
+
+/* Order types diagram */
+.order-types { }
+.order-type {
+  display: flex; gap: 16px; align-items: flex-start;
+  padding: 14px 0; border-bottom: 1px solid var(--border);
+}
+.order-badge {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px; letter-spacing: 1px;
+  padding: 4px 10px; border-radius: 2px;
+  flex-shrink: 0; font-weight: 500;
+  text-transform: uppercase;
+}
+.badge-market { background: rgba(212,168,67,.15); color: var(--gold); border: 1px solid rgba(212,168,67,.3); }
+.badge-limit { background: rgba(46,204,113,.1); color: var(--green); border: 1px solid rgba(46,204,113,.3); }
+.badge-stop { background: rgba(231,76,60,.1); color: var(--red); border: 1px solid rgba(231,76,60,.3); }
+.order-type p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+/* Risk gauge */
+.risk-gauge-wrap { text-align: center; padding: 10px 0; }
+.gauge-track {
+  height: 12px; background: var(--bg);
+  border-radius: 6px; margin: 20px 0 8px;
+  position: relative; overflow: hidden;
+}
+.gauge-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green) 0%, var(--gold) 50%, var(--red) 100%);
+  border-radius: 6px;
+  width: 100%;
+}
+.gauge-needle {
+  position: absolute; top: -4px;
+  width: 4px; height: 20px;
+  background: white; border-radius: 2px;
+  transition: left .4s ease;
+}
+.gauge-labels {
+  display: flex; justify-content: space-between;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px; color: var(--muted);
+}
+.risk-slider {
+  width: 100%; margin-top: 16px;
+  accent-color: var(--gold);
+  cursor: pointer;
+}
+.risk-result {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 14px; color: var(--text);
+  margin-top: 12px; min-height: 40px;
+}
+
+/* ── GLOSSARY ── */
+#glossary { background: var(--bg2); }
+.glossary-search-wrap {
+  position: relative; max-width: 480px; margin-bottom: 40px;
+}
+.glossary-search {
+  width: 100%;
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 16px;
+  padding: 16px 48px 16px 20px; outline: none;
+  transition: border-color .2s;
+}
+.glossary-search:focus { border-color: var(--gold); }
+.search-icon { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--muted); }
+.glossary-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+.glossary-card {
+  background: var(--card); border: 1px solid var(--border);
+  padding: 24px 28px; transition: border-color .2s;
+}
+.glossary-card:hover { border-color: rgba(212,168,67,.4); }
+.glossary-term {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px; font-weight: 700;
+  color: var(--gold); margin-bottom: 8px;
+}
+.glossary-def { font-size: 14px; color: var(--muted); line-height: 1.7; }
+.glossary-tag {
+  display: inline-block; margin-top: 12px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--muted); border: 1px solid var(--border);
+  padding: 3px 8px;
+}
+.no-results { color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 14px; padding: 20px 0; }
+
+/* ── QUIZ ── */
+#quiz { background: var(--bg); }
+.quiz-wrap { max-width: 700px; }
+.quiz-progress-wrap { margin-bottom: 40px; }
+.quiz-progress-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.quiz-progress-fill { height: 100%; background: var(--gold); transition: width .4s ease; }
+.quiz-counter {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px; color: var(--muted);
+  letter-spacing: 1px; margin-top: 10px;
+}
+.quiz-question {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px; font-weight: 700;
+  line-height: 1.3; margin-bottom: 36px;
+}
+.quiz-options { display: flex; flex-direction: column; gap: 12px; }
+.quiz-option {
+  background: var(--card); border: 1px solid var(--border);
+  color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 16px;
+  padding: 18px 24px; cursor: pointer; text-align: left;
+  transition: border-color .2s, background .2s; display: flex; align-items: center; gap: 16px;
+}
+.quiz-option:hover { border-color: var(--gold); background: rgba(212,168,67,.04); }
+.quiz-option.correct { border-color: var(--green); background: rgba(46,204,113,.08); color: var(--green); }
+.quiz-option.wrong { border-color: var(--red); background: rgba(231,76,60,.08); color: var(--red); }
+.quiz-option.disabled { cursor: not-allowed; pointer-events: none; }
+.option-letter {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px; font-weight: 500;
+  width: 28px; height: 28px;
+  border: 1px solid currentColor; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  color: var(--muted);
+}
+.quiz-feedback {
+  margin-top: 24px; padding: 18px 24px;
+  font-size: 15px; line-height: 1.7;
+  border-left: 3px solid transparent; display: none;
+}
+.quiz-feedback.show { display: block; }
+.quiz-feedback.correct-fb { border-color: var(--green); background: rgba(46,204,113,.06); color: var(--text); }
+.quiz-feedback.wrong-fb { border-color: var(--red); background: rgba(231,76,60,.05); color: var(--text); }
+.quiz-next {
+  margin-top: 28px;
+  background: var(--gold); color: #000;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px; letter-spacing: 1px; text-transform: uppercase;
+  padding: 14px 32px; border: none; cursor: pointer;
+  display: none; transition: background .2s;
+}
+.quiz-next.show { display: inline-block; }
+.quiz-next:hover { background: var(--gold2); }
+.quiz-result { text-align: center; padding: 40px 0; }
+.quiz-score {
+  font-family: 'Playfair Display', serif;
+  font-size: 80px; font-weight: 900; color: var(--gold);
+  line-height: 1;
+}
+.quiz-score-label { font-size: 20px; color: var(--muted); margin: 12px 0 32px; }
+.quiz-restart {
+  background: var(--gold); color: #000;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px; letter-spacing: 1px; text-transform: uppercase;
+  padding: 16px 40px; border: none; cursor: pointer;
+  transition: background .2s;
+}
+.quiz-restart:hover { background: var(--gold2); }
+
+/* ── SIMULATOR ── */
+#simulator { background: var(--bg2); }
+.sim-wrap { max-width: 800px; }
+.sim-balance-row {
+  display: flex; gap: 32px; margin-bottom: 40px; flex-wrap: wrap;
+}
+.sim-balance-card {
+  background: var(--card); border: 1px solid var(--border);
+  padding: 24px 32px; flex: 1; min-width: 160px;
+}
+.sim-balance-card .lbl {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px; color: var(--muted);
+  letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px;
+}
+.sim-balance-card .val {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px; font-weight: 700;
+}
+.sim-controls {
+  display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px;
+  margin-bottom: 32px; align-items: end;
+}
+.sim-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px; color: var(--muted);
+  letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px;
+}
+.sim-select, .sim-input {
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text); font-family: 'IBM Plex Mono', monospace;
+  font-size: 15px; padding: 14px 16px; width: 100%; outline: none;
+  transition: border-color .2s;
+}
+.sim-select:focus, .sim-input:focus { border-color: var(--gold); }
+.sim-select option { background: var(--bg3); }
+.sim-buy-btn, .sim-sell-btn {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px; font-weight: 500;
+  letter-spacing: 1px; text-transform: uppercase;
+  padding: 14px 24px; border: none; cursor: pointer;
+  transition: opacity .2s;
+}
+.sim-buy-btn { background: var(--green); color: #000; }
+.sim-sell-btn { background: var(--red); color: #fff; }
+.sim-buy-btn:hover, .sim-sell-btn:hover { opacity: .85; }
+.sim-btn-group { display: flex; gap: 8px; }
+.sim-holdings { }
+.sim-holdings h4 {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px; color: var(--muted);
+  letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px;
+}
+.sim-holding-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 0; border-bottom: 1px solid var(--border);
+}
+.sim-ticker { font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 500; }
+.sim-shares { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--muted); }
+.sim-pnl { font-family: 'IBM Plex Mono', monospace; font-size: 14px; }
+.sim-message { font-family: 'IBM Plex Mono', monospace; font-size: 13px; margin-top: 16px; min-height: 20px; }
+.sim-message.ok { color: var(--green); }
+.sim-message.err { color: var(--red); }
+.empty-holdings { color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 13px; padding: 20px 0; }
+
+/* ── CANDLESTICK EXPLAINER ── */
+.candle-explainer { display: flex; gap: 48px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+.candle-svg-wrap { flex-shrink: 0; }
+.candle-legend { display: flex; flex-direction: column; gap: 14px; }
+.candle-legend-item { display: flex; gap: 12px; align-items: flex-start; }
+.candle-legend-dot { width: 14px; height: 14px; border-radius: 2px; flex-shrink: 0; margin-top: 2px; }
+.candle-legend-item p { font-size: 14px; color: var(--muted); line-height: 1.5; }
+.candle-legend-item strong { color: var(--text); }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  padding: 64px 48px 40px;
+}
+.footer-top {
+  display: grid; grid-template-columns: 2fr 1fr 1fr;
+  gap: 48px; margin-bottom: 48px;
+}
+.footer-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px; font-weight: 900;
+  color: var(--gold); margin-bottom: 16px;
+}
+.footer-desc { font-size: 15px; color: var(--muted); line-height: 1.7; max-width: 320px; }
+.footer-col h5 {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 20px;
+}
+.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.footer-col ul a { color: var(--muted); text-decoration: none; font-size: 15px; transition: color .2s; }
+.footer-col ul a:hover { color: var(--gold); }
+.footer-bottom {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 32px; border-top: 1px solid var(--border); flex-wrap: gap;
+}
+.footer-copy {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px; color: var(--muted); letter-spacing: .5px;
+}
+.footer-disclaimer {
+  font-size: 11px; color: var(--muted); max-width: 480px;
+  line-height: 1.6; text-align: right;
+}
+
+/* ── SCROLL ANIMATIONS ── */
+.reveal {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity .7s ease, transform .7s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  nav { padding: 16px 24px; }
+  .nav-links { display: none; }
+  section { padding: 64px 24px; }
+  .hero { padding: 60px 24px; }
+  .hero-stats { position: static; flex-wrap: wrap; gap: 24px; margin-top: 40px; }
+  .tab-content.active { grid-template-columns: 1fr; }
+  .footer-top { grid-template-columns: 1fr; }
+  .sim-controls { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
+  .footer-disclaimer { text-align: center; }
+  .hero-stats { display: flex; }
+  .divider { margin: 0 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- TICKER TAPE -->
+<div class="ticker-tape">
+  <div class="ticker-inner" id="tickerInner">
+    <span class="up">AAPL $178.32 +1.24%</span>
+    <span class="dn">TSLA $245.18 -0.87%</span>
+    <span class="up">MSFT $415.72 +0.53%</span>
+    <span class="up">NVDA $875.40 +2.31%</span>
+    <span class="dn">META $502.11 -0.42%</span>
+    <span class="up">AMZN $186.94 +0.78%</span>
+    <span class="dn">GOOGL $164.23 -0.15%</span>
+    <span class="up">BRK.B $398.05 +0.21%</span>
+    <span class="up">JPM $196.77 +0.63%</span>
+    <span class="dn">NFLX $620.44 -1.05%</span>
+    <span class="up">AAPL $178.32 +1.24%</span>
+    <span class="dn">TSLA $245.18 -0.87%</span>
+    <span class="up">MSFT $415.72 +0.53%</span>
+    <span class="up">NVDA $875.40 +2.31%</span>
+    <span class="dn">META $502.11 -0.42%</span>
+    <span class="up">AMZN $186.94 +0.78%</span>
+    <span class="dn">GOOGL $164.23 -0.15%</span>
+    <span class="up">BRK.B $398.05 +0.21%</span>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">TICKER<span>101</span></div>
+  <ul class="nav-links">
+    <li><a onclick="document.getElementById('concepts').scrollIntoView({behavior:'smooth'})" style="cursor:pointer">Concepts</a></li>
+    <li><a onclick="document.getElementById('lessons').scrollIntoView({behavior:'smooth'})" style="cursor:pointer">Lessons</a></li>
+    <li><a onclick="document.getElementById('glossary').scrollIntoView({behavior:'smooth'})" style="cursor:pointer">Glossary</a></li>
+    <li><a onclick="document.getElementById('simulator').scrollIntoView({behavior:'smooth'})" style="cursor:pointer">Simulator</a></li>
+    <li><a onclick="document.getElementById('quiz').scrollIntoView({behavior:'smooth'})" style="cursor:pointer">Quiz</a></li>
+  </ul>
+  <button class="nav-cta" onclick="document.getElementById('lessons').scrollIntoView({behavior:'smooth'})">Start Learning</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">// Welcome to the stock market</div>
+    <h1>Invest Like<br>You <em>Know</em><br>What You're Doing.</h1>
+    <p class="hero-sub">From zero to confident investor — learn what stocks really are, how markets work, and how to make smart decisions with your money.</p>
+    <div class="hero-btns">
+      <a class="btn-primary" onclick="document.getElementById('concepts').scrollIntoView({behavior:'smooth'})" style="cursor:pointer">Begin the Course</a>
+      <a class="btn-secondary" onclick="document.getElementById('glossary').scrollIntoView({behavior:'smooth'})" style="cursor:pointer">Browse Glossary</a>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="num">8</div>
+      <div class="lbl">Core Lessons</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num">50+</div>
+      <div class="lbl">Terms Defined</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num">$10K</div>
+      <div class="lbl">Paper Money</div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<!-- CONCEPTS -->
+<section id="concepts">
+  <div class="section-eyebrow">// Module 01</div>
+  <h2 class="section-title">Core Concepts</h2>
+  <p class="section-sub">Everything starts here. These six ideas are the foundation of everything you'll learn about investing.</p>
+
+  <div class="concepts-grid reveal">
+    <div class="concept-card">
+      <span class="concept-icon">🏢</span>
+      <div class="concept-num">01 — WHAT IS A STOCK</div>
+      <h3>Shares of Ownership</h3>
+      <p>A stock is a small piece of a company. When you buy a share, you become a part-owner — entitled to a slice of the company's profits and growth.</p>
+    </div>
+    <div class="concept-card">
+      <span class="concept-icon">🏛️</span>
+      <div class="concept-num">02 — THE MARKET</div>
+      <h3>Where Stocks Trade</h3>
+      <p>Stock exchanges like the NYSE and NASDAQ are organized marketplaces where buyers and sellers meet to trade shares. Supply and demand sets the price.</p>
+    </div>
+    <div class="concept-card">
+      <span class="concept-icon">📈</span>
+      <div class="concept-num">03 — BULL vs BEAR</div>
+      <h3>Market Moods</h3>
+      <p>A bull market means prices are rising and confidence is high. A bear market means prices are falling. Both are completely normal parts of market cycles.</p>
+    </div>
+    <div class="concept-card">
+      <span class="concept-icon">💰</span>
+      <div class="concept-num">04 — DIVIDENDS</div>
+      <h3>Passive Income</h3>
+      <p>Some companies share profits with shareholders through regular cash payments called dividends. It's like getting paid just for holding the stock.</p>
+    </div>
+    <div class="concept-card">
+      <span class="concept-icon">⚖️</span>
+      <div class="concept-num">05 — RISK & RETURN</div>
+      <h3>The Fundamental Trade-off</h3>
+      <p>Higher potential returns always come with higher risk. Understanding your own risk tolerance is the first step to building a portfolio that works for you.</p>
+    </div>
+    <div class="concept-card">
+      <span class="concept-icon">🧺</span>
+      <div class="concept-num">06 — DIVERSIFICATION</div>
+      <h3>Don't Put All Your Eggs in One Basket</h3>
+      <p>Spreading investments across many different stocks and sectors reduces your overall risk. One company falling doesn't sink your whole portfolio.</p>
+    </div>
+  </div>
+</section>
+
+<!-- LESSONS -->
+<section id="lessons">
+  <div class="section-eyebrow">// Module 02</div>
+  <h2 class="section-title">Deep Dive Lessons</h2>
+  <p class="section-sub">Tap into each topic and explore it fully with explanations, visuals, and interactive examples.</p>
+
+  <div class="tabs-nav">
+    <button class="tab-btn active" onclick="showTab('tab-market')">How Markets Work</button>
+    <button class="tab-btn" onclick="showTab('tab-reading')">Reading a Stock</button>
+    <button class="tab-btn" onclick="showTab('tab-orders')">Order Types</button>
+    <button class="tab-btn" onclick="showTab('tab-risk')">Risk Tolerance</button>
+    <button class="tab-btn" onclick="showTab('tab-candles')">Candlestick Charts</button>
+  </div>
+
+  <!-- TAB 1: How Markets Work -->
+  <div class="tab-content active reveal" id="tab-market">
+    <div class="lesson-text">
+      <h2>How the Stock Market Actually Works</h2>
+      <p>Think of the stock market as a giant auction that runs Monday–Friday, 9:30am–4:00pm Eastern Time. Millions of buyers and sellers are constantly making offers, and prices update in milliseconds.</p>
+      <p>When more people want to buy a stock than sell it, the price goes up. When more people want to sell, the price drops. It's pure supply and demand.</p>
+      <ul>
+        <li>Companies list their shares on an exchange via an IPO (Initial Public Offering)</li>
+        <li>After the IPO, shares trade freely between investors on the open market</li>
+        <li>The company only receives money from the IPO — not from day-to-day trading</li>
+        <li>Market makers ensure there's always a buyer and seller available</li>
+        <li>Prices reflect millions of people's collective beliefs about a company's future</li>
+      </ul>
+    </div>
+    <div class="lesson-visual">
+      <h4>// S&P 500 — Monthly Performance</h4>
+      <div class="chart-wrap">
+        <div class="chart-bars" id="chart1">
+          <div class="bar" style="height:55%; animation-delay:.1s"></div>
+          <div class="bar" style="height:72%; animation-delay:.15s"></div>
+          <div class="bar red" style="height:45%; animation-delay:.2s"></div>
+          <div class="bar" style="height:63%; animation-delay:.25s"></div>
+          <div class="bar" style="height:80%; animation-delay:.3s"></div>
+          <div class="bar red" style="height:38%; animation-delay:.35s"></div>
+          <div class="bar" style="height:91%; animation-delay:.4s"></div>
+          <div class="bar" style="height:75%; animation-delay:.45s"></div>
+          <div class="bar red" style="height:52%; animation-delay:.5s"></div>
+          <div class="bar" style="height:88%; animation-delay:.55s"></div>
+          <div class="bar" style="height:95%; animation-delay:.6s"></div>
+          <div class="bar" style="height:70%; animation-delay:.65s"></div>
+        </div>
+      </div>
+      <div class="chart-labels">
+        <span>JAN</span><span>FEB</span><span>MAR</span><span>APR</span><span>MAY</span><span>JUN</span>
+        <span>JUL</span><span>AUG</span><span>SEP</span><span>OCT</span><span>NOV</span><span>DEC</span>
+      </div>
+      <div style="margin-top:24px;">
+        <div class="market-clock">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase">NYSE Current Time (ET)</div>
+          <div class="clock-display" id="clockDisplay">--:--:--</div>
+          <div class="market-status" id="marketStatus">Checking...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: Reading a Stock -->
+  <div class="tab-content" id="tab-reading">
+    <div class="lesson-text">
+      <h2>How to Read a Stock Quote</h2>
+      <p>Every stock has a ticker symbol — a short abbreviation (like AAPL for Apple) — and a real-time price. But there's much more to know when evaluating whether to invest.</p>
+      <ul>
+        <li><strong style="color:var(--text)">Price:</strong> The last price at which a share traded</li>
+        <li><strong style="color:var(--text)">Market Cap:</strong> Total value of all shares combined. Large-cap = stable; small-cap = riskier but more growth potential</li>
+        <li><strong style="color:var(--text)">P/E Ratio:</strong> Price-to-Earnings — how much you pay for $1 of profit. High P/E = high expectations</li>
+        <li><strong style="color:var(--text)">52-Week High/Low:</strong> The range the stock has traded in over the past year</li>
+        <li><strong style="color:var(--text)">Volume:</strong> How many shares traded today. High volume = high interest</li>
+        <li><strong style="color:var(--text)">Dividend Yield:</strong> Annual dividend as a % of stock price</li>
+        <li><strong style="color:var(--text)">EPS:</strong> Earnings per share — the company's profit divided by number of shares</li>
+      </ul>
+    </div>
+    <div class="lesson-visual">
+      <h4>// Sample Stock Quote</h4>
+      <div style="border:1px solid var(--border);padding:24px;background:var(--bg);">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">
+          <div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:28px;font-weight:500;color:var(--gold)">AAPL</div>
+            <div style="font-size:13px;color:var(--muted);margin-top:4px">Apple Inc. — NASDAQ</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-family:'Playfair Display',serif;font-size:36px;font-weight:700">$178.32</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--green)">▲ +2.14 (+1.21%)</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="background:var(--bg3);padding:12px 16px;">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Market Cap</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:15px">$2.78T</div>
+          </div>
+          <div style="background:var(--bg3);padding:12px 16px;">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">P/E Ratio</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:15px">29.4x</div>
+          </div>
+          <div style="background:var(--bg3);padding:12px 16px;">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">52W Range</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:15px">$143 – $199</div>
+          </div>
+          <div style="background:var(--bg3);padding:12px 16px;">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Dividend Yield</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:15px">0.53%</div>
+          </div>
+          <div style="background:var(--bg3);padding:12px 16px;">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">EPS</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:15px">$6.07</div>
+          </div>
+          <div style="background:var(--bg3);padding:12px 16px;">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Volume</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:15px">58.4M</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: Order Types -->
+  <div class="tab-content" id="tab-orders">
+    <div class="lesson-text">
+      <h2>Types of Stock Orders</h2>
+      <p>When you're ready to buy or sell a stock, you don't just say "buy it" — you choose an order type that controls exactly how and when your trade gets filled.</p>
+      <p>Picking the wrong order type can cost you money. Here's what each one does:</p>
+      <ul>
+        <li><strong style="color:var(--text)">Market Order:</strong> Executes immediately at the current price. Fast but no price guarantee.</li>
+        <li><strong style="color:var(--text)">Limit Order:</strong> You set the exact price you'll pay or accept. Only executes if that price is reached.</li>
+        <li><strong style="color:var(--text)">Stop-Loss Order:</strong> Automatically sells if the stock falls to a price you set — protects you from big losses.</li>
+        <li><strong style="color:var(--text)">Stop-Limit Order:</strong> Combines stop and limit — triggers a limit order when the stop price is hit.</li>
+        <li><strong style="color:var(--text)">Day Order:</strong> Valid only for the current trading day — cancels if not filled by close.</li>
+        <li><strong style="color:var(--text)">GTC (Good Till Canceled):</strong> Stays active until you cancel it, regardless of how many days pass.</li>
+      </ul>
+    </div>
+    <div class="lesson-visual">
+      <h4>// Order Type Quick Guide</h4>
+      <div class="order-types">
+        <div class="order-type">
+          <div><span class="order-badge badge-market">MARKET</span></div>
+          <p><strong style="color:var(--text)">Buy/sell now</strong> at whatever the current price is. Best for liquid stocks when speed matters more than price precision.</p>
+        </div>
+        <div class="order-type">
+          <div><span class="order-badge badge-limit">LIMIT</span></div>
+          <p><strong style="color:var(--text)">Set your price.</strong> "Buy AAPL only if it drops to $170." The order waits patiently until your target is hit.</p>
+        </div>
+        <div class="order-type">
+          <div><span class="order-badge badge-stop">STOP-LOSS</span></div>
+          <p><strong style="color:var(--text)">Your safety net.</strong> "If AAPL falls below $160, sell automatically." Protects gains and limits downside without watching every minute.</p>
+        </div>
+      </div>
+      <div style="margin-top:28px;padding:20px;background:rgba(212,168,67,.06);border:1px solid rgba(212,168,67,.2);">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--gold);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">💡 PRO TIP</div>
+        <p style="font-size:14px;color:var(--muted);line-height:1.7">Beginners should almost always use <strong style="color:var(--text)">limit orders</strong> when buying. Market orders during volatile moments can execute at a much higher price than you expected — a phenomenon called "slippage."</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 4: Risk Tolerance -->
+  <div class="tab-content" id="tab-risk">
+    <div class="lesson-text">
+      <h2>Understanding Your Risk Tolerance</h2>
+      <p>Before you invest a single dollar, you need to answer one critical question: <em style="color:var(--gold)">How would you feel if your portfolio dropped 30%?</em></p>
+      <p>Your answer reveals your risk tolerance — and it should shape everything from what you invest in to how much cash you hold.</p>
+      <ul>
+        <li><strong style="color:var(--text)">Aggressive:</strong> You're young, have long time horizons, and can stomach big swings. Heavy in growth stocks and small caps.</li>
+        <li><strong style="color:var(--text)">Moderate:</strong> Balanced approach — mix of growth stocks, dividend payers, and bonds. Can handle some volatility.</li>
+        <li><strong style="color:var(--text)">Conservative:</strong> Prioritize capital preservation. Focus on blue-chip stocks, dividend stocks, and bonds. Fewer surprises.</li>
+        <li><strong style="color:var(--text)">Time Horizon matters:</strong> Investing for 30 years? You can absorb short-term drops. Investing for 3 years? Be cautious.</li>
+        <li><strong style="color:var(--text)">Emergency fund first:</strong> Never invest money you might need within 1–2 years. The market can be down exactly when you need it.</li>
+      </ul>
+    </div>
+    <div class="lesson-visual">
+      <h4>// Risk Tolerance Calculator</h4>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:20px">Drag the slider to explore how different risk profiles affect potential returns and volatility.</p>
+      <div class="gauge-track">
+        <div class="gauge-fill"></div>
+        <div class="gauge-needle" id="gaugeNeedle" style="left:50%"></div>
+      </div>
+      <div class="gauge-labels">
+        <span>CONSERVATIVE</span><span>MODERATE</span><span>AGGRESSIVE</span>
+      </div>
+      <input type="range" class="risk-slider" id="riskSlider" min="0" max="100" value="50" oninput="updateRisk(this.value)">
+      <div class="risk-result" id="riskResult">
+        <strong style="color:var(--gold)">Moderate Investor</strong><br>
+        Expected annual return: ~8–10% | Max historical drawdown: ~30%<br>
+        Suggested mix: 60% stocks, 30% index funds, 10% bonds
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 5: Candlestick Charts -->
+  <div class="tab-content" id="tab-candles">
+    <div class="lesson-text">
+      <h2>Reading Candlestick Charts</h2>
+      <p>Candlestick charts are the standard way to visualize how a stock's price moved over a period of time — each "candle" tells the story of a single day, hour, or minute.</p>
+      <p>Once you can read them, you'll be able to spot patterns that hint at where prices might go next. This is the beginning of <em style="color:var(--gold)">technical analysis</em>.</p>
+      <ul>
+        <li>Each candle shows the Open, Close, High, and Low prices for a time period</li>
+        <li>A green/white candle means the price went UP during that period (close > open)</li>
+        <li>A red/black candle means the price went DOWN (close &lt; open)</li>
+        <li>The "wick" or "shadow" shows how far price swung beyond the open/close range</li>
+        <li>Patterns like "Doji," "Hammer," and "Engulfing" signal potential reversals</li>
+        <li>Always combine candlestick signals with other analysis — don't rely on them alone</li>
+      </ul>
+    </div>
+    <div class="lesson-visual">
+      <h4>// Anatomy of a Candlestick</h4>
+      <div class="candle-explainer">
+        <div class="candle-svg-wrap">
+          <svg width="200" height="240" viewBox="0 0 200 240">
+            <!-- Green candle -->
+            <line x1="60" y1="20" x2="60" y2="70" stroke="#2ecc71" stroke-width="2"/>
+            <rect x="45" y="70" width="30" height="100" fill="#2ecc71" rx="1"/>
+            <line x1="60" y1="170" x2="60" y2="210" stroke="#2ecc71" stroke-width="2"/>
+            <text x="20" y="24" fill="#7a7870" font-size="11" font-family="IBM Plex Mono">HIGH</text>
+            <line x1="42" y1="20" x2="78" y2="20" stroke="#7a7870" stroke-width="1" stroke-dasharray="3"/>
+            <text x="90" y="74" fill="#2ecc71" font-size="11" font-family="IBM Plex Mono">OPEN</text>
+            <line x1="78" y1="70" x2="130" y2="70" stroke="#2ecc71" stroke-width="1" stroke-dasharray="3"/>
+            <text x="90" y="170" fill="#2ecc71" font-size="11" font-family="IBM Plex Mono">CLOSE</text>
+            <line x1="78" y1="170" x2="130" y2="170" stroke="#2ecc71" stroke-width="1" stroke-dasharray="3"/>
+            <text x="20" y="214" fill="#7a7870" font-size="11" font-family="IBM Plex Mono">LOW</text>
+            <line x1="42" y1="210" x2="78" y2="210" stroke="#7a7870" stroke-width="1" stroke-dasharray="3"/>
+            <!-- Red candle -->
+            <line x1="150" y1="40" x2="150" y2="85" stroke="#e74c3c" stroke-width="2"/>
+            <rect x="135" y="85" width="30" height="80" fill="#e74c3c" rx="1"/>
+            <line x1="150" y1="165" x2="150" y2="200" stroke="#e74c3c" stroke-width="2"/>
+          </svg>
+        </div>
+        <div class="candle-legend">
+          <div class="candle-legend-item">
+            <div class="candle-legend-dot" style="background:var(--green)"></div>
+            <p><strong>Green candle</strong> — Close was higher than open. Buyers were in control.</p>
+          </div>
+          <div class="candle-legend-item">
+            <div class="candle-legend-dot" style="background:var(--red)"></div>
+            <p><strong>Red candle</strong> — Close was lower than open. Sellers were in control.</p>
+          </div>
+          <div class="candle-legend-item">
+            <div class="candle-legend-dot" style="background:var(--muted)"></div>
+            <p><strong>Upper wick</strong> — Price reached here but sellers pushed it back down.</p>
+          </div>
+          <div class="candle-legend-item">
+            <div class="candle-legend-dot" style="background:var(--muted)"></div>
+            <p><strong>Lower wick</strong> — Price dipped here but buyers stepped in to push it up.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GLOSSARY -->
+<section id="glossary">
+  <div class="section-eyebrow">// Module 03</div>
+  <h2 class="section-title">The Investor's Glossary</h2>
+  <p class="section-sub">50+ essential terms, searchable and explained in plain English — no jargon, no fluff.</p>
+
+  <div class="glossary-search-wrap reveal">
+    <input class="glossary-search" id="glossarySearch" type="text" placeholder="Search terms... (e.g. dividend, IPO, ETF)" oninput="filterGlossary(this.value)">
+    <span class="search-icon">⌕</span>
+  </div>
+  <div class="glossary-grid" id="glossaryGrid"></div>
+</section>
+
+<!-- SIMULATOR -->
+<section id="simulator">
+  <div class="section-eyebrow">// Module 04</div>
+  <h2 class="section-title">Paper Trading Simulator</h2>
+  <p class="section-sub">Practice buying and selling stocks with $10,000 of virtual money. No real risk — real learning.</p>
+
+  <div class="sim-wrap reveal">
+    <div class="sim-balance-row">
+      <div class="sim-balance-card">
+        <div class="lbl">Cash Balance</div>
+        <div class="val" id="simCash">$10,000.00</div>
+      </div>
+      <div class="sim-balance-card">
+        <div class="lbl">Holdings Value</div>
+        <div class="val" id="simHoldingsVal">$0.00</div>
+      </div>
+      <div class="sim-balance-card">
+        <div class="lbl">Total Portfolio</div>
+        <div class="val pos" id="simTotal">$10,000.00</div>
+      </div>
+    </div>
+
+    <div class="sim-controls">
+      <div>
+        <div class="sim-label">Stock</div>
+        <select class="sim-select" id="simStock">
+          <option value="AAPL">AAPL — Apple Inc.</option>
+          <option value="MSFT">MSFT — Microsoft</option>
+          <option value="GOOGL">GOOGL — Alphabet</option>
+          <option value="TSLA">TSLA — Tesla</option>
+          <option value="NVDA">NVDA — NVIDIA</option>
+          <option value="AMZN">AMZN — Amazon</option>
+          <option value="META">META — Meta Platforms</option>
+          <option value="NFLX">NFLX — Netflix</option>
+        </select>
+      </div>
+      <div>
+        <div class="sim-label">Shares</div>
+        <input class="sim-input" id="simShares" type="number" min="1" value="1" placeholder="# of shares">
+      </div>
+      <div class="sim-btn-group">
+        <button class="sim-buy-btn" onclick="simTrade('buy')">BUY</button>
+        <button class="sim-sell-btn" onclick="simTrade('sell')">SELL</button>
+      </div>
+    </div>
+    <div class="sim-message" id="simMessage"></div>
+
+    <div class="sim-holdings">
+      <h4>// Your Holdings</h4>
+      <div id="simHoldingsList"><div class="empty-holdings">You don't own any stocks yet. Buy some above ↑</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section id="quiz">
+  <div class="section-eyebrow">// Module 05</div>
+  <h2 class="section-title">Test Your Knowledge</h2>
+  <p class="section-sub">10 questions covering everything you've learned. See how you score.</p>
+
+  <div class="quiz-wrap reveal">
+    <div id="quizContainer">
+      <div class="quiz-progress-wrap">
+        <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="quizProgress" style="width:0%"></div></div>
+        <div class="quiz-counter" id="quizCounter">Question 1 of 10</div>
+      </div>
+      <div class="quiz-question" id="quizQuestion"></div>
+      <div class="quiz-options" id="quizOptions"></div>
+      <div class="quiz-feedback" id="quizFeedback"></div>
+      <button class="quiz-next" id="quizNext" onclick="nextQuestion()">Next Question →</button>
+    </div>
+    <div class="quiz-result" id="quizResult" style="display:none">
+      <div class="quiz-score" id="quizScoreDisplay">0/10</div>
+      <div class="quiz-score-label" id="quizScoreLabel"></div>
+      <button class="quiz-restart" onclick="restartQuiz()">Retake Quiz</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-logo">TICKER101</div>
+      <p class="footer-desc">A free, interactive stock market education platform designed to take complete beginners from zero to confident investor — step by step.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Learn</h5>
+      <ul>
+        <li><a onclick="document.getElementById('concepts').scrollIntoView({behavior:'smooth'})" style="cursor:pointer">Core Concepts</a></li>
+        <li><a onclick="document.getElementById('lessons').scrollIntoView({behavior:'smooth'})" style="cursor:pointer">Lessons</a></li>
+        <li><a onclick="document.getElementById('glossary').scrollIntoView({behavior:'smooth'})" style="cursor:pointer">Glossary</a></li>
+        <li><a onclick="document.getElementById('simulator').scrollIntoView({behavior:'smooth'})" style="cursor:pointer">Simulator</a></li>
+        <li><a onclick="document.getElementById('quiz').scrollIntoView({behavior:'smooth'})" style="cursor:pointer">Quiz</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Topics</h5>
+      <ul>
+        <li><a onclick="document.getElementById('lessons').scrollIntoView({behavior:'smooth'})" style="cursor:pointer">Market Basics</a></li>
+        <li><a onclick="document.getElementById('lessons').scrollIntoView({behavior:'smooth'})" style="cursor:pointer">Stock Analysis</a></li>
+        <li><a onclick="document.getElementById('lessons').scrollIntoView({behavior:'smooth'})" style="cursor:pointer">Order Types</a></li>
+        <li><a onclick="document.getElementById('lessons').scrollIntoView({behavior:'smooth'})" style="cursor:pointer">Candlesticks</a></li>
+        <li><a onclick="document.getElementById('lessons').scrollIntoView({behavior:'smooth'})" style="cursor:pointer">Risk Management</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2026 TICKER101 — Built for beginners, by beginners.</div>
+    <div class="footer-disclaimer">⚠️ This platform is for educational purposes only. Nothing here constitutes financial advice. Always do your own research and consult a licensed financial advisor before investing real money.</div>
+  </div>
+</footer>
+
+<script>
+// ── GLOSSARY DATA ──
+const glossaryTerms = [
+  { term: "Stock", def: "A unit of ownership in a company. Owning stock means you own a fraction of that business.", tag: "Basics" },
+  { term: "Share", def: "One unit of stock. If a company has 1 million shares and you own 1,000, you own 0.1% of it.", tag: "Basics" },
+  { term: "Dividend", def: "A cash payment companies make to shareholders, usually quarterly, as a reward for holding stock.", tag: "Returns" },
+  { term: "Market Cap", def: "Total value of a company's shares. Calculated by multiplying price × total shares. Mega-cap = $200B+.", tag: "Valuation" },
+  { term: "P/E Ratio", def: "Price-to-Earnings. How much you pay for $1 of profit. High P/E means the market expects big future growth.", tag: "Valuation" },
+  { term: "IPO", def: "Initial Public Offering — the first time a private company sells shares to the general public on a stock exchange.", tag: "Basics" },
+  { term: "Bull Market", def: "A sustained period of rising stock prices, typically 20%+ gains from a recent low, driven by optimism.", tag: "Market" },
+  { term: "Bear Market", def: "A sustained decline of 20%+ in stock prices from a recent high, often caused by economic fear.", tag: "Market" },
+  { term: "Portfolio", def: "Your complete collection of investments — stocks, bonds, ETFs, cash, real estate — everything you own.", tag: "Basics" },
+  { term: "Diversification", def: "Spreading money across different investments to reduce risk. If one falls, others may hold steady.", tag: "Strategy" },
+  { term: "ETF", def: "Exchange-Traded Fund. A basket of stocks that trades on an exchange like a single stock. Great for diversification.", tag: "Instruments" },
+  { term: "Index Fund", def: "A fund that tracks a market index like the S&P 500. Passive, low-cost, and historically hard to beat.", tag: "Instruments" },
+  { term: "S&P 500", def: "An index of the 500 largest U.S. public companies. Considered the benchmark for the overall U.S. stock market.", tag: "Market" },
+  { term: "Volatility", def: "How much a stock's price fluctuates. High volatility = big swings up and down. Low volatility = steady movement.", tag: "Risk" },
+  { term: "Broker", def: "A company (like Fidelity, Schwab, or Robinhood) that lets you buy and sell stocks. Most are free today.", tag: "Basics" },
+  { term: "Ticker Symbol", def: "A short abbreviation used to identify a stock on an exchange. AAPL = Apple, MSFT = Microsoft.", tag: "Basics" },
+  { term: "Liquidity", def: "How easily you can buy or sell a stock without affecting its price. Large stocks are highly liquid.", tag: "Market" },
+  { term: "Capital Gains", def: "The profit you make when you sell a stock for more than you paid. Short-term vs. long-term affects taxes.", tag: "Returns" },
+  { term: "Yield", def: "Income generated by an investment as a percentage of its price. A $100 stock paying $3/year has a 3% yield.", tag: "Returns" },
+  { term: "Short Selling", def: "Betting a stock will fall by borrowing and selling shares you don't own, then buying them back cheaper.", tag: "Advanced" },
+  { term: "Margin", def: "Borrowing money from your broker to buy more stock than you could with your own cash. Amplifies gains AND losses.", tag: "Advanced" },
+  { term: "Dollar-Cost Averaging", def: "Investing a fixed amount regularly (e.g. $200/month) regardless of price. Reduces the impact of volatility.", tag: "Strategy" },
+  { term: "Compound Interest", def: "Earning returns on your returns. Over time, this snowballs into extraordinary growth — Einstein called it the 8th wonder.", tag: "Strategy" },
+  { term: "Earnings Per Share (EPS)", def: "A company's net profit divided by number of shares. Higher EPS generally means a more profitable company.", tag: "Valuation" },
+  { term: "Revenue", def: "The total money a company brings in from sales before any expenses. The top line of the income statement.", tag: "Fundamentals" },
+  { term: "Profit Margin", def: "What % of revenue becomes profit. A 20% margin means the company keeps $20 for every $100 it earns.", tag: "Fundamentals" },
+  { term: "Recession", def: "Two consecutive quarters of negative economic growth (GDP decline). Often causes bear markets.", tag: "Economy" },
+  { term: "Inflation", def: "The rate at which prices rise over time. High inflation erodes purchasing power and often hurts stock prices.", tag: "Economy" },
+  { term: "Federal Reserve", def: "The U.S. central bank that controls interest rates and money supply. Its decisions move markets enormously.", tag: "Economy" },
+  { term: "Interest Rates", def: "The cost of borrowing money. When rates rise, bonds become more attractive and stocks often fall.", tag: "Economy" },
+  { term: "Blue Chip Stock", def: "A large, well-established, financially stable company with a long track record. Think Apple, Johnson & Johnson.", tag: "Types" },
+  { term: "Growth Stock", def: "A company expected to grow faster than average. Usually reinvests profits instead of paying dividends.", tag: "Types" },
+  { term: "Value Stock", def: "A stock trading below what analysts think it's worth. Think bargain hunting — made famous by Warren Buffett.", tag: "Types" },
+  { term: "Penny Stock", def: "Stocks trading under $5 per share. Often small, speculative companies. Very high risk, easy to manipulate.", tag: "Types" },
+  { term: "Sector", def: "A group of companies in the same industry. Technology, Healthcare, Energy, and Financials are major sectors.", tag: "Basics" },
+  { term: "Technical Analysis", def: "Analyzing stock price charts and patterns to predict future movements. Uses indicators like moving averages and RSI.", tag: "Analysis" },
+  { term: "Fundamental Analysis", def: "Evaluating a company's financial health, management, and competitive position to determine its intrinsic value.", tag: "Analysis" },
+  { term: "Moving Average", def: "The average price of a stock over a set period (e.g., 50-day MA). Smooths out price noise to show trends.", tag: "Analysis" },
+  { term: "Support Level", def: "A price at which a stock historically stops falling and bounces back up. Buyers tend to step in here.", tag: "Analysis" },
+  { term: "Resistance Level", def: "A price at which a stock historically stops rising and pulls back. Sellers tend to step in here.", tag: "Analysis" },
+  { term: "RSI", def: "Relative Strength Index. A 0–100 momentum indicator. Above 70 = overbought; below 30 = oversold.", tag: "Analysis" },
+  { term: "Candlestick Chart", def: "A type of price chart where each 'candle' shows the open, high, low, and close for a time period.", tag: "Analysis" },
+  { term: "Market Order", def: "Buy or sell immediately at the current market price. Guaranteed to execute, but price isn't guaranteed.", tag: "Trading" },
+  { term: "Limit Order", def: "Buy or sell only at a specific price or better. Price is guaranteed if it executes, but it might not fill.", tag: "Trading" },
+  { term: "Stop-Loss Order", def: "An automatic sell order triggered when a stock falls to a set price. Protects against large losses.", tag: "Trading" },
+  { term: "Bid-Ask Spread", def: "The difference between what buyers will pay (bid) and sellers want (ask). Smaller spread = more liquid market.", tag: "Trading" },
+  { term: "Volume", def: "The number of shares traded in a given time period. High volume confirms the strength of a price move.", tag: "Trading" },
+  { term: "Bond", def: "A loan you make to a government or corporation. They pay you interest and return your money at maturity.", tag: "Instruments" },
+  { term: "REIT", def: "Real Estate Investment Trust. A company that owns income-producing real estate and trades like a stock.", tag: "Instruments" },
+  { term: "Options", def: "Contracts giving you the right (not obligation) to buy/sell a stock at a set price before a specific date.", tag: "Advanced" },
+];
+
+// ── QUIZ DATA ──
+const quizData = [
+  {
+    q: "What does it mean to own a stock?",
+    options: ["You've lent money to a company", "You own a small piece of the company", "You're guaranteed a fixed return", "You control the company's management"],
+    correct: 1,
+    explanation: "A stock represents ownership. Shareholders are part-owners of the company and may benefit from its growth and profits."
+  },
+  {
+    q: "What is a 'bear market'?",
+    options: ["A market where tech stocks outperform", "A period of steady, predictable growth", "A market decline of 20% or more from recent highs", "A market with very low trading volume"],
+    correct: 2,
+    explanation: "A bear market is defined as a 20%+ drop from recent highs. It signals widespread pessimism and economic uncertainty."
+  },
+  {
+    q: "What is a dividend?",
+    options: ["A fee charged by your broker", "A type of stock exchange", "A share of company profits paid to shareholders", "The difference between buy and sell price"],
+    correct: 2,
+    explanation: "Dividends are cash payments companies make to shareholders — usually quarterly — as a reward for holding the stock."
+  },
+  {
+    q: "What does 'diversification' mean in investing?",
+    options: ["Only buying international stocks", "Spreading investments across many assets to reduce risk", "Investing all your money in one winning stock", "Trading stocks every day"],
+    correct: 1,
+    explanation: "Diversification means not putting all your eggs in one basket. By spreading across sectors, you reduce the damage any single bad investment can do."
+  },
+  {
+    q: "What is the P/E ratio used for?",
+    options: ["Measuring daily trading volume", "Calculating dividend payments", "Valuing a stock relative to its earnings", "Tracking market cap changes"],
+    correct: 2,
+    explanation: "The Price-to-Earnings ratio tells you how much investors pay for $1 of profit. It's one of the most commonly used valuation metrics."
+  },
+  {
+    q: "Which order type guarantees your price but might not execute?",
+    options: ["Market Order", "Stop Order", "Limit Order", "GTC Order"],
+    correct: 2,
+    explanation: "A limit order only executes at your specified price or better. The trade-off: if the price never reaches your limit, the order won't fill."
+  },
+  {
+    q: "What does 'IPO' stand for?",
+    options: ["International Portfolio Offering", "Index Price Overview", "Initial Public Offering", "Investment Protection Option"],
+    correct: 2,
+    explanation: "An IPO is when a private company first sells shares to the public on a stock exchange — it's how companies 'go public.'"
+  },
+  {
+    q: "A green candlestick means the stock price:",
+    options: ["Went down during that time period", "Stayed exactly the same", "Went up — the close was higher than the open", "Was extremely volatile"],
+    correct: 2,
+    explanation: "A green (bullish) candlestick shows that the closing price was higher than the opening price — buyers were in control during that period."
+  },
+  {
+    q: "What is dollar-cost averaging?",
+    options: ["Converting currency before investing", "Investing a fixed amount at regular intervals regardless of price", "Only buying stocks when they hit a new high", "Calculating your average cost per share for taxes"],
+    correct: 1,
+    explanation: "DCA means investing a fixed amount regularly. When prices are low you buy more shares, when high you buy fewer — averaging out your cost over time."
+  },
+  {
+    q: "What does a high RSI (above 70) typically indicate?",
+    options: ["The stock is undervalued and cheap", "The stock may be overbought and due for a pullback", "The company has high earnings per share", "The stock has low volatility"],
+    correct: 1,
+    explanation: "An RSI above 70 is generally considered 'overbought' — meaning the stock has risen quickly and may be due for a correction. It's a caution signal, not a guaranteed sell."
+  }
+];
+
+// ── GLOSSARY ──
+function renderGlossary(filter = '') {
+  const grid = document.getElementById('glossaryGrid');
+  const filtered = glossaryTerms.filter(t =>
+    t.term.toLowerCase().includes(filter.toLowerCase()) ||
+    t.def.toLowerCase().includes(filter.toLowerCase()) ||
+    t.tag.toLowerCase().includes(filter.toLowerCase())
+  );
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="no-results">No terms found for "' + filter + '"</div>';
+    return;
+  }
+  grid.innerHTML = filtered.map(t => `
+    <div class="glossary-card">
+      <div class="glossary-term">${t.term}</div>
+      <div class="glossary-def">${t.def}</div>
+      <span class="glossary-tag">${t.tag}</span>
+    </div>
+  `).join('');
+}
+function filterGlossary(val) { renderGlossary(val); }
+renderGlossary();
+
+// ── TABS ──
+function showTab(id) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ── MARKET CLOCK ──
+function updateClock() {
+  const now = new Date();
+  const et = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+  const h = et.getHours(), m = et.getMinutes(), s = et.getSeconds(), d = et.getDay();
+  const pad = n => n.toString().padStart(2, '0');
+  document.getElementById('clockDisplay').textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
+  const isOpen = d >= 1 && d <= 5 && (h > 9 || (h === 9 && m >= 30)) && h < 16;
+  const status = document.getElementById('marketStatus');
+  status.textContent = isOpen ? '● MARKET OPEN' : '● MARKET CLOSED';
+  status.className = 'market-status ' + (isOpen ? 'open' : 'closed');
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ── RISK SLIDER ──
+const riskProfiles = [
+  { label: 'Conservative Investor', ret: '4–6%', draw: '~15%', mix: '20% stocks, 40% bonds, 40% cash/treasuries', needle: '8%' },
+  { label: 'Conservative-Moderate', ret: '5–7%', draw: '~20%', mix: '40% stocks, 40% bonds, 20% index funds', needle: '24%' },
+  { label: 'Moderate Investor', ret: '7–9%', draw: '~30%', mix: '60% stocks, 30% index funds, 10% bonds', needle: '42%' },
+  { label: 'Moderate-Aggressive', ret: '9–12%', draw: '~40%', mix: '75% stocks, 20% index funds, 5% alternatives', needle: '60%' },
+  { label: 'Aggressive Investor', ret: '10–15%+', draw: '~50%', mix: '90% stocks, 10% high-growth ETFs, 0% bonds', needle: '80%' },
+  { label: 'Very Aggressive', ret: '15%+ (or losses)', draw: '60%+', mix: '100% high-growth / small-cap stocks, crypto', needle: '94%' },
+];
+function updateRisk(v) {
+  const i = Math.min(5, Math.floor(v / 17));
+  const p = riskProfiles[i];
+  document.getElementById('gaugeNeedle').style.left = `calc(${v}% - 2px)`;
+  document.getElementById('riskResult').innerHTML = `<strong style="color:var(--gold)">${p.label}</strong><br>Expected annual return: ${p.ret} &nbsp;|&nbsp; Max historical drawdown: ${p.draw}<br>Suggested mix: ${p.mix}`;
+}
+updateRisk(50);
+
+// ── SIMULATOR ──
+const stockPrices = { AAPL:178.32, MSFT:415.72, GOOGL:164.23, TSLA:245.18, NVDA:875.40, AMZN:186.94, META:502.11, NFLX:620.44 };
+let simState = { cash: 10000, holdings: {} };
+
+function formatMoney(n) { return '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+function simMessage(msg, type) {
+  const el = document.getElementById('simMessage');
+  el.textContent = msg; el.className = 'sim-message ' + type;
+  setTimeout(() => { el.textContent = ''; el.className = 'sim-message'; }, 3000);
+}
+function updateSimUI() {
+  document.getElementById('simCash').textContent = formatMoney(simState.cash);
+  let holdVal = 0;
+  Object.keys(simState.holdings).forEach(t => { holdVal += simState.holdings[t].shares * stockPrices[t]; });
+  document.getElementById('simHoldingsVal').textContent = formatMoney(holdVal);
+  const total = simState.cash + holdVal;
+  const totalEl = document.getElementById('simTotal');
+  totalEl.textContent = formatMoney(total);
+  totalEl.className = 'val ' + (total >= 10000 ? 'pos' : 'neg');
+  const list = document.getElementById('simHoldingsList');
+  if (Object.keys(simState.holdings).length === 0) {
+    list.innerHTML = '<div class="empty-holdings">You don\'t own any stocks yet. Buy some above ↑</div>';
+    return;
+  }
+  list.innerHTML = Object.keys(simState.holdings).map(t => {
+    const h = simState.holdings[t];
+    const current = h.shares * stockPrices[t];
+    const pnl = current - h.cost;
+    const pnlPct = ((pnl / h.cost) * 100).toFixed(2);
+    return `<div class="sim-holding-row">
+      <div><div class="sim-ticker">${t}</div><div class="sim-shares">${h.shares} shares @ ${formatMoney(stockPrices[t])}</div></div>
+      <div style="text-align:right"><div class="sim-pnl ${pnl >= 0 ? 'pos' : 'neg'}">${pnl >= 0 ? '+' : ''}${formatMoney(pnl)} (${pnlPct}%)</div><div style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted)">${formatMoney(current)}</div></div>
+    </div>`;
+  }).join('');
+}
+function simTrade(action) {
+  const ticker = document.getElementById('simStock').value;
+  const shares = parseInt(document.getElementById('simShares').value);
+  if (!shares || shares < 1) { simMessage('Enter a valid number of shares.', 'err'); return; }
+  const price = stockPrices[ticker];
+  const cost = shares * price;
+  if (action === 'buy') {
+    if (cost > simState.cash) { simMessage(`Not enough cash. Need ${formatMoney(cost)}, have ${formatMoney(simState.cash)}.`, 'err'); return; }
+    simState.cash -= cost;
+    if (!simState.holdings[ticker]) simState.holdings[ticker] = { shares: 0, cost: 0 };
+    simState.holdings[ticker].shares += shares;
+    simState.holdings[ticker].cost += cost;
+    simMessage(`✓ Bought ${shares} share${shares > 1 ? 's' : ''} of ${ticker} for ${formatMoney(cost)}`, 'ok');
+  } else {
+    if (!simState.holdings[ticker] || simState.holdings[ticker].shares < shares) {
+      simMessage(`You don't own ${shares} shares of ${ticker}.`, 'err'); return;
+    }
+    simState.cash += cost;
+    simState.holdings[ticker].shares -= shares;
+    simState.holdings[ticker].cost -= (simState.holdings[ticker].cost / (simState.holdings[ticker].shares + shares)) * shares;
+    if (simState.holdings[ticker].shares === 0) delete simState.holdings[ticker];
+    simMessage(`✓ Sold ${shares} share${shares > 1 ? 's' : ''} of ${ticker} for ${formatMoney(cost)}`, 'ok');
+  }
+  updateSimUI();
+  // Slightly randomize prices for fun
+  Object.keys(stockPrices).forEach(t => {
+    stockPrices[t] = +(stockPrices[t] * (1 + (Math.random() * .02 - .01))).toFixed(2);
+  });
+}
+updateSimUI();
+
+// ── QUIZ ──
+let quizIndex = 0, quizScore = 0, quizAnswered = false;
+const shuffled = [...quizData].sort(() => Math.random() - .5);
+
+function renderQuestion() {
+  const q = shuffled[quizIndex];
+  document.getElementById('quizProgress').style.width = (quizIndex / shuffled.length * 100) + '%';
+  document.getElementById('quizCounter').textContent = `Question ${quizIndex + 1} of ${shuffled.length}`;
+  document.getElementById('quizQuestion').textContent = q.q;
+  const letters = ['A', 'B', 'C', 'D'];
+  document.getElementById('quizOptions').innerHTML = q.options.map((opt, i) => `
+    <button class="quiz-option" onclick="answerQuiz(${i})">
+      <span class="option-letter">${letters[i]}</span> ${opt}
+    </button>
+  `).join('');
+  document.getElementById('quizFeedback').className = 'quiz-feedback';
+  document.getElementById('quizNext').className = 'quiz-next';
+  quizAnswered = false;
+}
+
+function answerQuiz(i) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+  const q = shuffled[quizIndex];
+  const opts = document.querySelectorAll('.quiz-option');
+  opts.forEach(o => o.classList.add('disabled'));
+  opts[q.correct].classList.add('correct');
+  if (i !== q.correct) opts[i].classList.add('wrong');
+  else quizScore++;
+  const fb = document.getElementById('quizFeedback');
+  fb.className = 'quiz-feedback show ' + (i === q.correct ? 'correct-fb' : 'wrong-fb');
+  fb.innerHTML = (i === q.correct ? '✓ Correct! ' : '✗ Not quite. ') + q.explanation;
+  document.getElementById('quizNext').className = 'quiz-next show';
+}
+
+function nextQuestion() {
+  quizIndex++;
+  if (quizIndex >= shuffled.length) {
+    document.getElementById('quizContainer').style.display = 'none';
+    document.getElementById('quizResult').style.display = 'block';
+    document.getElementById('quizScoreDisplay').textContent = quizScore + '/' + shuffled.length;
+    const pct = quizScore / shuffled.length;
+    const labels = ['Keep studying! Review the lessons above.', 'Good start! A few more passes and you\'ll nail it.', 'Nice work! You know your stuff.', 'Excellent! You\'re ready to start investing.', '🏆 Perfect score! You\'re a stock market pro!'];
+    document.getElementById('quizScoreLabel').textContent = pct < .4 ? labels[0] : pct < .6 ? labels[1] : pct < .8 ? labels[2] : pct < 1 ? labels[3] : labels[4];
+    return;
+  }
+  renderQuestion();
+}
+
+function restartQuiz() {
+  quizIndex = 0; quizScore = 0; quizAnswered = false;
+  shuffled.sort(() => Math.random() - .5);
+  document.getElementById('quizContainer').style.display = 'block';
+  document.getElementById('quizResult').style.display = 'none';
+  renderQuestion();
+}
+
+renderQuestion();
+
+// ── SCROLL REVEAL ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
